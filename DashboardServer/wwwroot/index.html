@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダッシュボード</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ログイン画面 -->
+        <div id="loginContainer" class="container">
+            <div class="login-box">
+                <h1>ダッシュボード ログイン</h1>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="userId">ユーザーID</label>
+                        <input type="text" id="userId" name="userId" required maxlength="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">パスワード</label>
+                        <input type="password" id="password" name="password" required maxlength="30">
+                    </div>
+                    <div id="loginError" class="error-message"></div>
+                    <button type="submit" class="btn btn-primary">ログイン</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ダッシュボード画面 -->
+        <div id="dashboardContainer" class="container" style="display: none;">
+            <div class="header">
+                <h1>ダッシュボード</h1>
+                <div class="user-info">
+                    <span id="userInfo"></span>
+                    <button id="logoutBtn" class="btn btn-secondary">ログアウト</button>
+                </div>
+            </div>
+            <div class="dashboard-content">
+                <div class="chart-container">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/chart.min.js"></script>
+    <script>
+        // グローバル変数
+        let authToken = null;
+        let chart = null;
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // ローカルストレージからトークンを取得
+            authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                showDashboard();
+                loadDashboardData();
+            }
+
+            // ログインフォームの送信処理
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+            // ログアウトボタンの処理
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        });
+
+        // ログイン処理
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('loginError');
+            
+            errorElement.textContent = '';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: userId,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('userId', data.userId);
+                    localStorage.setItem('staffLevel', data.staffLevel);
+                    
+                    showDashboard();
+                    loadDashboardData();
+                } else {
+                    errorElement.textContent = data.message || 'ログインに失敗しました。';
+                }
+            } catch (error) {
+                console.error('ログインエラー:', error);
+                errorElement.textContent = 'ログイン処理中にエラーが発生しました。';
+            }
+        }
+
+        // ログアウト処理
+        function handleLogout() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('staffLevel');
+            
+            if (chart) {
+                chart.destroy();
+                chart = null;
+            }
+
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginError').textContent = '';
+        }
+
+        // ダッシュボード表示
+        function showDashboard() {
+            const userId = localStorage.getItem('userId');
+            const staffLevel = localStorage.getItem('staffLevel');
+            
+            document.getElementById('userInfo').textContent = `${userId} (${staffLevel})`;
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'block';
+        }
+
+        // ダッシュボードデータの読み込み
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard/data', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.status === 401) {
+                    handleLogout();
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error('データの取得に失敗しました。');
+                }
+
+                const data = await response.json();
+                renderChart(data);
+            } catch (error) {
+                console.error('データ取得エラー:', error);
+                alert('ダッシュボードデータの取得に失敗しました。');
+            }
+        }
+
+        // グラフの描画
+        function renderChart(data) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: data.title,
+                        data: data.values,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 定期的なデータ更新（5分ごと）
+        setInterval(function() {
+            if (authToken && document.getElementById('dashboardContainer').style.display !== 'none') {
+                loadDashboardData();
+            }
+        }, 300000); // 300000ms = 5分
+    </script>
+</body>
+</html>

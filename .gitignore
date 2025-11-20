@@ -1,0 +1,65 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+
+# Build outputs
+publish/
+publish_batch/
+package_temp/
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono auto generated files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin
+$RECYCLE.BIN/
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# Log files
+*.log
+
+# dotnet installation script
+dotnet-install.sh
+
+# Distribution packages
+*.zip
+DashboardSystem_*.zip
+
+# Batch import logs
+BatchImport/logs/
