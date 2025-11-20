@@ -118,44 +118,35 @@ public partial class DashboardService
         command.Parameters.AddWithValue("@StartDate", startDate);
         command.Parameters.AddWithValue("@EndDate", endDate);
 
-        var dataDict = new Dictionary<string, List<int>>();
+        var tempData = new Dictionary<string, Dictionary<string, int>>();
         var labels = new List<string>();
         var departments = new List<string>();
 
-        using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        // データを一度に取得して整形
+        using (var reader = await command.ExecuteReaderAsync())
         {
-            var periodLabel = reader.GetString(0);
-            var deptName = reader.GetString(1);
-            var value = reader.GetInt32(2);
-
-            if (!labels.Contains(periodLabel))
+            while (await reader.ReadAsync())
             {
-                labels.Add(periodLabel);
+                var periodLabel = reader.GetString(0);
+                var deptName = reader.GetString(1);
+                var value = reader.GetInt32(2);
+
+                if (!labels.Contains(periodLabel))
+                {
+                    labels.Add(periodLabel);
+                }
+
+                if (!departments.Contains(deptName))
+                {
+                    departments.Add(deptName);
+                }
+
+                if (!tempData.ContainsKey(periodLabel))
+                {
+                    tempData[periodLabel] = new Dictionary<string, int>();
+                }
+                tempData[periodLabel][deptName] = value;
             }
-
-            if (!dataDict.ContainsKey(deptName))
-            {
-                dataDict[deptName] = new List<int>();
-                departments.Add(deptName);
-            }
-        }
-
-        // データを再取得して整形
-        using var reader2 = await command.ExecuteReaderAsync();
-        var tempData = new Dictionary<string, Dictionary<string, int>>();
-
-        while (await reader2.ReadAsync())
-        {
-            var periodLabel = reader2.GetString(0);
-            var deptName = reader2.GetString(1);
-            var value = reader2.GetInt32(2);
-
-            if (!tempData.ContainsKey(periodLabel))
-            {
-                tempData[periodLabel] = new Dictionary<string, int>();
-            }
-            tempData[periodLabel][deptName] = value;
         }
 
         // Datasetを構築
