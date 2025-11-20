@@ -7,6 +7,11 @@ echo ダッシュボードサーバー 発行スクリプト
 echo ========================================
 echo.
 
+REM Visual Studioなどが開いている場合は警告
+echo 注意: Visual Studio や VS Code を閉じてから実行してください
+echo.
+pause
+
 REM 発行先ディレクトリ
 set PUBLISH_DIR=.\publish
 
@@ -17,45 +22,36 @@ if exist "%PUBLISH_DIR%" (
 )
 
 echo.
-echo ビルドキャッシュを完全にクリーンアップしています...
+echo ビルドキャッシュをクリーンアップしています...
 echo.
 
-REM まずdotnet cleanを実行
+REM 方法1: dotnet clean を使用
 dotnet clean --configuration Release --verbosity quiet
 
-REM obj/binフォルダを強制削除（少し待機してから実行）
-timeout /t 1 /nobreak >nul
+REM 方法2: obj と bin を手動削除（エラーは無視）
 if exist obj (
-    echo obj フォルダを削除中...
-    rmdir /s /q obj
+    echo obj フォルダを削除しています...
+    rmdir /s /q obj 2>nul
+    if exist obj (
+        echo 注意: obj フォルダが使用中です。手動削除が必要な場合があります。
+    )
 )
+
 if exist bin (
-    echo bin フォルダを削除中...
-    rmdir /s /q bin
+    echo bin フォルダを削除しています...
+    rmdir /s /q bin 2>nul
+    if exist bin (
+        echo 注意: bin フォルダが使用中です。手動削除が必要な場合があります。
+    )
 )
 
-REM フォルダが完全に削除されるまで待機
-timeout /t 2 /nobreak >nul
-
-REM 削除確認
-if exist obj (
-    echo 警告: obj フォルダの削除に失敗しました。手動で削除してください。
-    pause
-    exit /b 1
-)
-if exist bin (
-    echo 警告: bin フォルダの削除に失敗しました。手動で削除してください。
-    pause
-    exit /b 1
-)
-
-echo クリーンアップ完了
 echo.
 echo 発行を開始します...
 echo.
 
 REM 完全自己完結型で発行（.NET Runtimeを含む）
-dotnet publish -c Release -r win-x64 --self-contained true -o "%PUBLISH_DIR%"
+REM --force オプションで強制的に再ビルド
+dotnet publish -c Release -r win-x64 --self-contained true --force -o "%PUBLISH_DIR%"
 
 if %errorlevel% equ 0 (
     echo.
@@ -67,13 +63,23 @@ if %errorlevel% equ 0 (
     echo.
     echo 次の手順:
     echo 1. %PUBLISH_DIR% フォルダを配置先サーバーにコピー
-    echo 2. appsettings.json を編集（Oracle接続情報など）
-    echo 3. DashboardServer.exe を実行
+    echo 2. Scripts フォルダ内の create-dummy-data.bat を実行してダミーデータを作成
+    echo 3. appsettings.json を編集（必要に応じて）
+    echo 4. DashboardServer.exe を実行
     echo.
 ) else (
     echo.
-    echo エラー: 発行に失敗しました。
-    echo もう一度実行してみてください。
+    echo ========================================
+    echo エラー: 発行に失敗しました
+    echo ========================================
+    echo.
+    echo 対処方法:
+    echo 1. Visual Studio や VS Code を完全に閉じる
+    echo 2. タスクマネージャーで dotnet.exe や MSBuild.exe を終了
+    echo 3. obj と bin フォルダを手動で削除:
+    echo    - D:\develop\Dashbord-CSharp\DashboardServer\obj
+    echo    - D:\develop\Dashbord-CSharp\DashboardServer\bin
+    echo 4. もう一度このスクリプトを実行
     echo.
 )
 
