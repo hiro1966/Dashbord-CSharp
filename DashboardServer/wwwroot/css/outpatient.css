@@ -1,0 +1,258 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ヘッダー */
+.header {
+    background: white;
+    border-radius: 10px;
+    padding: 20px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-links a {
+    padding: 8px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #555;
+    background: #f5f5f5;
+    transition: all 0.3s;
+}
+
+.nav-links a:hover {
+    background: #e0e0e0;
+}
+
+.nav-links a.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* コントロールパネル */
+.control-panel {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.label-icon {
+    font-size: 18px;
+}
+
+.label-text {
+    font-size: 14px;
+}
+
+/* ボタングループ */
+.button-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-option {
+    padding: 8px 16px;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    background: white;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.btn-option:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.btn-option.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* 日付範囲選択 */
+.date-range {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-range input[type="date"] {
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.date-range input[type="date"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.date-separator {
+    color: #999;
+    font-weight: bold;
+}
+
+/* 更新ボタン */
+.btn-update {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 5px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-update:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-update span {
+    font-size: 16px;
+}
+
+/* グラフエリア */
+.chart-wrapper {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container {
+    position: relative;
+    height: 500px;
+}
+
+/* 統計パネル */
+.stats-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-label {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.stat-value {
+    color: #333;
+    font-size: 28px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .control-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .btn-option {
+        width: 100%;
+    }
+
+    .date-range {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .chart-container {
+        height: 350px;
+    }
+
+    .stats-panel {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外来患者数ダッシュボード</title>
+    <link rel="stylesheet" href="/css/outpatient.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1>📊 外来患者数ダッシュボード</h1>
+            <nav class="nav-links">
+                <a href="/">入院患者</a>
+                <a href="/outpatient.html" class="active">外来患者</a>
+            </nav>
+        </header>
+
+        <!-- コントロールパネル -->
+        <div class="control-panel">
+            <div class="control-group">
+                <label>
+                    <span class="label-icon">🏥</span>
+                    <span class="label-text">診療科</span>
+                </label>
+                <div class="button-group">
+                    <button class="btn-option active" data-value="全科">全科</button>
+                    <button class="btn-option" data-value="全科(色分)">全科(色分)</button>
+                    <button class="btn-option" data-value="内科">内科</button>
+                    <button class="btn-option" data-value="小児科">小児科</button>
+                    <button class="btn-option" data-value="整形外科">整形外科</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <span class="label-icon">📅</span>
+                    <span class="label-text">期間種別</span>
+                </label>
+                <div class="button-group">
+                    <button class="btn-option" data-value="年毎">年毎</button>
+                    <button class="btn-option" data-value="月毎">月毎</button>
+                    <button class="btn-option active" data-value="日毎">日毎</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <span class="label-icon">📆</span>
+                    <span class="label-text">期間選択</span>
+                </label>
+                <div class="date-range">
+                    <input type="date" id="startDate" value="2025-01-01">
+                    <span class="date-separator">〜</span>
+                    <input type="date" id="endDate" value="2025-10-31">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <button id="updateBtn" class="btn-update">
+                    <span>🔄</span> データ更新
+                </button>
+            </div>
+        </div>
+
+        <!-- グラフ表示エリア -->
+        <div class="chart-wrapper">
+            <div class="chart-container">
+                <canvas id="outpatientChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 統計情報 -->
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="stat-label">総患者数</div>
+                <div class="stat-value" id="totalPatients">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">平均患者数/日</div>
+                <div class="stat-value" id="avgPatients">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">最大患者数</div>
+                <div class="stat-value" id="maxPatients">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">最小患者数</div>
+                <div class="stat-value" id="minPatients">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/chart.min.js"></script>
+    <script>
+        let chart = null;
+        let selectedDepartment = '全科';
+        let selectedPeriod = '日毎';
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadChartData();
+        });
+
+        // イベントリスナー設定
+        function setupEventListeners() {
+            // 診療科選択ボタン
+            document.querySelectorAll('.control-group:nth-child(1) .btn-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.control-group:nth-child(1) .btn-option').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedDepartment = this.dataset.value;
+                    loadChartData();
+                });
+            });
+
+            // 期間種別選択ボタン
+            document.querySelectorAll('.control-group:nth-child(2) .btn-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.control-group:nth-child(2) .btn-option').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedPeriod = this.dataset.value;
+                    loadChartData();
+                });
+            });
+
+            // 更新ボタン
+            document.getElementById('updateBtn').addEventListener('click', loadChartData);
+
+            // 日付変更時
+            document.getElementById('startDate').addEventListener('change', loadChartData);
+            document.getElementById('endDate').addEventListener('change', loadChartData);
+        }
+
+        // グラフデータ読み込み
+        async function loadChartData() {
+            try {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                const params = new URLSearchParams({
+                    department: selectedDepartment,
+                    period: selectedPeriod,
+                    startDate: startDate,
+                    endDate: endDate
+                });
+
+                const response = await fetch(`/api/dashboard/outpatient?${params}`);
+                if (!response.ok) {
+                    throw new Error('データの取得に失敗しました。');
+                }
+
+                const data = await response.json();
+                renderChart(data);
+                updateStats(data);
+            } catch (error) {
+                console.error('データ取得エラー:', error);
+                alert('データの取得に失敗しました。');
+            }
+        }
+
+        // グラフ描画
+        function renderChart(data) {
+            const ctx = document.getElementById('outpatientChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            const isStacked = selectedDepartment === '全科(色分)';
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: data.datasets.map(ds => ({
+                        label: ds.label,
+                        data: ds.data,
+                        borderColor: ds.borderColor,
+                        backgroundColor: ds.backgroundColor,
+                        fill: ds.fill,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: data.labels.length > 100 ? 0 : 3,
+                        pointHoverRadius: 5
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: data.title,
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            },
+                            padding: 20
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y.toLocaleString() + '人';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: getPeriodLabel()
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: '患者数（人）'
+                            },
+                            stacked: isStacked,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + '人';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 期間ラベル取得
+        function getPeriodLabel() {
+            switch (selectedPeriod) {
+                case '年毎': return '年';
+                case '月毎': return '年月';
+                default: return '日付';
+            }
+        }
+
+        // 統計情報更新
+        function updateStats(data) {
+            let allValues = [];
+            data.datasets.forEach(ds => {
+                allValues = allValues.concat(ds.data);
+            });
+
+            const total = allValues.reduce((sum, val) => sum + val, 0);
+            const avg = allValues.length > 0 ? Math.round(total / data.labels.length) : 0;
+            const max = allValues.length > 0 ? Math.max(...allValues) : 0;
+            const min = allValues.length > 0 ? Math.min(...allValues) : 0;
+
+            document.getElementById('totalPatients').textContent = total.toLocaleString() + '人';
+            document.getElementById('avgPatients').textContent = avg.toLocaleString() + '人';
+            document.getElementById('maxPatients').textContent = max.toLocaleString() + '人';
+            document.getElementById('minPatients').textContent = min.toLocaleString() + '人';
+        }
+
+        // 定期的なデータ更新（5分ごと）
+        setInterval(loadChartData, 300000);
+    </script>
+</body>
+</html>

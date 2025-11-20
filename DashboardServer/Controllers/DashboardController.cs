@@ -31,4 +31,23 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "データの取得に失敗しました。");
         }
     }
+
+    [HttpGet("outpatient")]
+    public async Task<ActionResult<OutpatientChartData>> GetOutpatientData(
+        [FromQuery] string department = "全科",
+        [FromQuery] string period = "日毎",
+        [FromQuery] string? startDate = null,
+        [FromQuery] string? endDate = null)
+    {
+        try
+        {
+            var data = await _dashboardService.GetOutpatientChartDataAsync(department, period, startDate, endDate);
+            return Ok(data);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "外来患者データ取得中にエラーが発生しました。");
+            return StatusCode(500, "データの取得に失敗しました。");
+        }
+    }
 }

@@ -3,7 +3,7 @@ using DashboardServer.Models;
 
 namespace DashboardServer.Services;
 
-public class DashboardService
+public partial class DashboardService
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<DashboardService> _logger;
