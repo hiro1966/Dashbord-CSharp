@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダッシュボード</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ダッシュボード画面 -->
+        <div id="dashboardContainer" class="container">
+            <div class="header">
+                <h1>📊 入院患者数ダッシュボード</h1>
+                <div class="user-info">
+                    <nav class="nav-links">
+                        <a href="/">🏠 トップ</a>
+                        <a href="/inpatient.html" class="active">入院患者</a>
+                        <a href="/outpatient.html">外来患者</a>
+                    </nav>
+                    <button id="refreshBtn" class="btn btn-primary">更新</button>
+                </div>
+            </div>
+            <div class="dashboard-content">
+                <div class="chart-container">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/chart.min.js"></script>
+    <script>
+        // グローバル変数
+        let chart = null;
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+
+            // 更新ボタンの処理
+            document.getElementById('refreshBtn').addEventListener('click', loadDashboardData);
+        });
+
+        // ダッシュボードデータの読み込み
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard/data', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('データの取得に失敗しました。');
+                }
+
+                const data = await response.json();
+                renderChart(data);
+            } catch (error) {
+                console.error('データ取得エラー:', error);
+                alert('ダッシュボードデータの取得に失敗しました。');
+            }
+        }
+
+        // グラフの描画
+        function renderChart(data) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: data.title,
+                        data: data.values,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 定期的なデータ更新（5分ごと）
+        setInterval(function() {
+            loadDashboardData();
+        }, 300000); // 300000ms = 5分
+    </script>
+</body>
+</html>
