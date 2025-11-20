@@ -1,4 +1,3 @@
-using System.Data.Odbc;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
@@ -55,51 +54,27 @@ class Program
         if (_configuration == null)
             throw new InvalidOperationException("設定が読み込まれていません。");
 
-        // Oracle接続情報
-        var dataSourceName = _configuration["OracleConnection:DataSourceName"];
-        var userId = _configuration["OracleConnection:UserId"];
-        var password = _configuration["OracleConnection:Password"];
-        var sourceTable = _configuration["ImportSettings:SourceTableName"];
-
         // SQLite接続情報
         var sqliteDbPath = _configuration["SqliteConnection:DatabasePath"];
 
-        LogMessage($"Oracle DSN: {dataSourceName}");
         LogMessage($"SQLite DB: {sqliteDbPath}");
-        LogMessage($"ソーステーブル: {sourceTable}");
 
-        var oracleConnectionString = $"DSN={dataSourceName};UID={userId};PWD={password}";
         var sqliteConnectionString = $"Data Source={sqliteDbPath}";
-
         var importCount = 0;
 
-        // Oracleからデータを取得
-        LogMessage("Oracleからデータを取得しています...");
-        var dataList = new List<(string Category, int Value)>();
-
-        using (var oracleConnection = new OdbcConnection(oracleConnectionString))
+        // サンプルデータ（実際にはCSVファイルやその他のソースから取得）
+        LogMessage("サンプルデータを準備しています...");
+        var dataList = new List<(string Category, int Value)>
         {
-            await oracleConnection.OpenAsync();
+            ("売上", new Random().Next(1000, 2000)),
+            ("顧客数", new Random().Next(200, 400)),
+            ("注文数", new Random().Next(300, 500)),
+            ("商品数", new Random().Next(50, 100)),
+            ("在庫数", new Random().Next(1000, 3000)),
+            ("返品数", new Random().Next(10, 50))
+        };
 
-            // サンプルクエリ（実際のテーブル構造に合わせて変更してください）
-            var query = $@"
-                SELECT Category, Value 
-                FROM {sourceTable}
-                WHERE RecordDate = TRUNC(SYSDATE)
-                ORDER BY Category";
-
-            using var command = new OdbcCommand(query, oracleConnection);
-            using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                var category = reader.GetString(0);
-                var value = reader.GetInt32(1);
-                dataList.Add((category, value));
-            }
-        }
-
-        LogMessage($"取得件数: {dataList.Count}件");
+        LogMessage($"データ件数: {dataList.Count}件");
 
         // SQLiteにデータを登録
         if (dataList.Count > 0)
@@ -114,9 +89,10 @@ class Program
             try
             {
                 // 既存データを削除（全削除する場合）
-                // var deleteQuery = "DELETE FROM DashboardData";
-                // using var deleteCommand = new SqliteCommand(deleteQuery, sqliteConnection, transaction);
-                // await deleteCommand.ExecuteNonQueryAsync();
+                var deleteQuery = "DELETE FROM DashboardData";
+                using var deleteCommand = new SqliteCommand(deleteQuery, sqliteConnection, transaction);
+                await deleteCommand.ExecuteNonQueryAsync();
+                LogMessage("既存データを削除しました。");
 
                 // データを挿入
                 var insertQuery = @"

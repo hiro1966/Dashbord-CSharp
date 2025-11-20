@@ -1,80 +1,80 @@
 @echo off
-REM Windowsã‚µãƒ¼ãƒ“ã‚¹ã¨ã—ã¦ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
-REM ç®¡ç†è€…æ¨©é™ã§å®Ÿè¡Œã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™
+REM WindowsƒT[ƒrƒX‚Æ‚µ‚ÄƒCƒ“ƒXƒg[ƒ‹‚·‚éƒXƒNƒŠƒvƒg
+REM ŠÇ—ÒŒ ŒÀ‚ÅÀs‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 
 echo ========================================
-echo ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã‚µãƒ¼ãƒãƒ¼ ã‚µãƒ¼ãƒ“ã‚¹ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+echo ƒ_ƒbƒVƒ…ƒ{[ƒhƒT[ƒo[ ƒT[ƒrƒXƒCƒ“ƒXƒg[ƒ‹
 echo ========================================
 echo.
 
-REM ç®¡ç†è€…æ¨©é™ãƒã‚§ãƒƒã‚¯
+REM ŠÇ—ÒŒ ŒÀƒ`ƒFƒbƒN
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ã‚¨ãƒ©ãƒ¼: ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã¯ç®¡ç†è€…æ¨©é™ã§å®Ÿè¡Œã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
-    echo å³ã‚¯ãƒªãƒƒã‚¯ â†’ ã€Œç®¡ç†è€…ã¨ã—ã¦å®Ÿè¡Œã€ã—ã¦ãã ã•ã„ã€‚
+    echo ƒGƒ‰[: ‚±‚ÌƒXƒNƒŠƒvƒg‚ÍŠÇ—ÒŒ ŒÀ‚ÅÀs‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+    echo ‰EƒNƒŠƒbƒN ¨ uŠÇ—Ò‚Æ‚µ‚ÄÀsv‚µ‚Ä‚­‚¾‚³‚¢B
     pause
     exit /b 1
 )
 
-REM ç¾åœ¨ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å–å¾—
+REM Œ»İ‚ÌƒfƒBƒŒƒNƒgƒŠ‚ğæ“¾
 set CURRENT_DIR=%~dp0
 set EXE_PATH=%CURRENT_DIR%DashboardServer.exe
 
-REM å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®å­˜åœ¨ç¢ºèª
+REM Àsƒtƒ@ƒCƒ‹‚Ì‘¶İŠm”F
 if not exist "%EXE_PATH%" (
-    echo ã‚¨ãƒ©ãƒ¼: DashboardServer.exe ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚
-    echo publish.bat ã‚’å®Ÿè¡Œã—ã¦ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ç™ºè¡Œã—ã¦ãã ã•ã„ã€‚
+    echo ƒGƒ‰[: DashboardServer.exe ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB
+    echo publish.bat ‚ğÀs‚µ‚ÄƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğ”­s‚µ‚Ä‚­‚¾‚³‚¢B
     pause
     exit /b 1
 )
 
-echo ã‚µãƒ¼ãƒ“ã‚¹å: DashboardService
-echo å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«: %EXE_PATH%
+echo ƒT[ƒrƒX–¼: DashboardService
+echo Àsƒtƒ@ƒCƒ‹: %EXE_PATH%
 echo.
 
-REM æ—¢å­˜ã®ã‚µãƒ¼ãƒ“ã‚¹ã‚’åœæ­¢ãƒ»å‰Šé™¤
+REM Šù‘¶‚ÌƒT[ƒrƒX‚ğ’â~Eíœ
 sc query DashboardService >nul 2>&1
 if %errorlevel% equ 0 (
-    echo æ—¢å­˜ã®ã‚µãƒ¼ãƒ“ã‚¹ãŒè¦‹ã¤ã‹ã‚Šã¾ã—ãŸã€‚å‰Šé™¤ã—ã¾ã™...
+    echo Šù‘¶‚ÌƒT[ƒrƒX‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½Bíœ‚µ‚Ü‚·...
     sc stop DashboardService
     timeout /t 3 /nobreak >nul
     sc delete DashboardService
     timeout /t 2 /nobreak >nul
 )
 
-REM ã‚µãƒ¼ãƒ“ã‚¹ã‚’ä½œæˆ
-echo ã‚µãƒ¼ãƒ“ã‚¹ã‚’ä½œæˆã—ã¦ã„ã¾ã™...
+REM ƒT[ƒrƒX‚ğì¬
+echo ƒT[ƒrƒX‚ğì¬‚µ‚Ä‚¢‚Ü‚·...
 sc create DashboardService binPath= "\"%EXE_PATH%\"" start= auto DisplayName= "Dashboard Server Service"
 
 if %errorlevel% equ 0 (
-    echo ã‚µãƒ¼ãƒ“ã‚¹ã®èª¬æ˜ã‚’è¨­å®šã—ã¦ã„ã¾ã™...
-    sc description DashboardService "ã‚ªãƒ•ãƒ©ã‚¤ãƒ³ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰Webã‚µãƒ¼ãƒãƒ¼"
+    echo ƒT[ƒrƒX‚Ìà–¾‚ğİ’è‚µ‚Ä‚¢‚Ü‚·...
+    sc description DashboardService "ƒIƒtƒ‰ƒCƒ“ƒ_ƒbƒVƒ…ƒ{[ƒhWebƒT[ƒo["
     
-    echo ã‚µãƒ¼ãƒ“ã‚¹ã‚’èµ·å‹•ã—ã¦ã„ã¾ã™...
+    echo ƒT[ƒrƒX‚ğ‹N“®‚µ‚Ä‚¢‚Ü‚·...
     sc start DashboardService
     
     if %errorlevel% equ 0 (
         echo.
         echo ========================================
-        echo ã‚µãƒ¼ãƒ“ã‚¹ã®ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãŒå®Œäº†ã—ã¾ã—ãŸï¼
+        echo ƒT[ƒrƒX‚ÌƒCƒ“ƒXƒg[ƒ‹‚ªŠ®—¹‚µ‚Ü‚µ‚½I
         echo ========================================
         echo.
-        echo ã‚µãƒ¼ãƒ“ã‚¹å: DashboardService
-        echo è¡¨ç¤ºå: Dashboard Server Service
-        echo èµ·å‹•ç¨®é¡: è‡ªå‹•
+        echo ƒT[ƒrƒX–¼: DashboardService
+        echo •\¦–¼: Dashboard Server Service
+        echo ‹N“®í—Ş: ©“®
         echo.
-        echo ã‚¢ã‚¯ã‚»ã‚¹URL: http://localhost:5000
+        echo ƒAƒNƒZƒXURL: http://localhost:5000
         echo.
-        echo ã‚µãƒ¼ãƒ“ã‚¹ã®ç®¡ç†:
-        echo   åœæ­¢: sc stop DashboardService
-        echo   é–‹å§‹: sc start DashboardService
-        echo   å‰Šé™¤: uninstall-service.bat ã‚’å®Ÿè¡Œ
+        echo ƒT[ƒrƒX‚ÌŠÇ—:
+        echo   ’â~: sc stop DashboardService
+        echo   ŠJn: sc start DashboardService
+        echo   íœ: uninstall-service.bat ‚ğÀs
         echo.
     ) else (
-        echo ã‚¨ãƒ©ãƒ¼: ã‚µãƒ¼ãƒ“ã‚¹ã®èµ·å‹•ã«å¤±æ•—ã—ã¾ã—ãŸã€‚
+        echo ƒGƒ‰[: ƒT[ƒrƒX‚Ì‹N“®‚É¸”s‚µ‚Ü‚µ‚½B
     )
 ) else (
-    echo ã‚¨ãƒ©ãƒ¼: ã‚µãƒ¼ãƒ“ã‚¹ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸã€‚
+    echo ƒGƒ‰[: ƒT[ƒrƒX‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½B
 )
 
 pause

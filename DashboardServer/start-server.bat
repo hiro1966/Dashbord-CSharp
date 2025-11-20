@@ -1,34 +1,34 @@
 @echo off
-REM ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã‚µãƒ¼ãƒãƒ¼èµ·å‹•ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
+REM ƒ_ƒbƒVƒ…ƒ{[ƒhƒT[ƒo[‹N“®ƒXƒNƒŠƒvƒg
 
 echo ========================================
-echo ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã‚µãƒ¼ãƒãƒ¼ã‚’èµ·å‹•ã—ã¾ã™
+echo ƒ_ƒbƒVƒ…ƒ{[ƒhƒT[ƒo[‚ð‹N“®‚µ‚Ü‚·
 echo ========================================
 echo.
 
-REM ç®¡ç†è€…æ¨©é™ãƒã‚§ãƒƒã‚¯
+REM ŠÇ—ŽÒŒ ŒÀƒ`ƒFƒbƒN
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo è­¦å‘Š: ç®¡ç†è€…æ¨©é™ã§å®Ÿè¡Œã—ã¦ã„ã¾ã›ã‚“ã€‚
-    echo ãƒãƒ¼ãƒˆ5000ã‚’ä½¿ç”¨ã™ã‚‹ã«ã¯ç®¡ç†è€…æ¨©é™ãŒå¿…è¦ãªå ´åˆãŒã‚ã‚Šã¾ã™ã€‚
+    echo Œx: ŠÇ—ŽÒŒ ŒÀ‚ÅŽÀs‚µ‚Ä‚¢‚Ü‚¹‚ñB
+    echo ƒ|[ƒg5000‚ðŽg—p‚·‚é‚É‚ÍŠÇ—ŽÒŒ ŒÀ‚ª•K—v‚Èê‡‚ª‚ ‚è‚Ü‚·B
     echo.
 )
 
-REM ã‚µãƒ¼ãƒãƒ¼èµ·å‹•
-echo ã‚µãƒ¼ãƒãƒ¼ã‚’èµ·å‹•ã—ã¦ã„ã¾ã™...
+REM ƒT[ƒo[‹N“®
+echo ƒT[ƒo[‚ð‹N“®‚µ‚Ä‚¢‚Ü‚·...
 echo.
-echo ã‚¢ã‚¯ã‚»ã‚¹URL:
-echo   ãƒ­ãƒ¼ã‚«ãƒ«:    http://localhost:5000
-echo   ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯: http://%COMPUTERNAME%:5000
+echo ƒAƒNƒZƒXURL:
+echo   ƒ[ƒJƒ‹:    http://localhost:5000
+echo   ƒlƒbƒgƒ[ƒN: http://%COMPUTERNAME%:5000
 echo.
-echo ã‚µãƒ¼ãƒãƒ¼ã‚’åœæ­¢ã™ã‚‹ã«ã¯ Ctrl+C ã‚’æŠ¼ã—ã¦ãã ã•ã„ã€‚
+echo ƒT[ƒo[‚ð’âŽ~‚·‚é‚É‚Í Ctrl+C ‚ð‰Ÿ‚µ‚Ä‚­‚¾‚³‚¢B
 echo.
 
-REM è‡ªå·±å®Œçµåž‹ã®å ´åˆ
+REM Ž©ŒÈŠ®Œ‹Œ^‚Ìê‡
 if exist "DashboardServer.exe" (
     DashboardServer.exe
 ) else (
-    REM .NET SDKãŒã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¦ã„ã‚‹å ´åˆ
+    REM .NET SDK‚ªƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ä‚¢‚éê‡
     dotnet run
 )
 

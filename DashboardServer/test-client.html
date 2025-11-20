@@ -67,10 +67,6 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
         .output {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -97,7 +93,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔧 ダッシュボード API テストクライアント</h1>
+        <h1>🔧 ダッシュボード API テストクライアント（認証なし）</h1>
 
         <!-- サーバー設定 -->
         <div class="section">
@@ -108,37 +104,15 @@
             </div>
         </div>
 
-        <!-- 認証テスト -->
-        <div class="section">
-            <h2>🔐 認証テスト (POST /api/auth/login)</h2>
-            <div class="form-group">
-                <label for="userId">ユーザーID</label>
-                <input type="text" id="userId" value="admin" maxlength="10">
-            </div>
-            <div class="form-group">
-                <label for="password">パスワード</label>
-                <input type="password" id="password" value="admin123" maxlength="30">
-            </div>
-            <button onclick="testLogin()">ログインテスト</button>
-            <div id="loginOutput" class="output" style="display: none;"></div>
-        </div>
-
-        <!-- トークン表示 -->
-        <div class="section" id="tokenSection" style="display: none;">
-            <h2>🎫 認証トークン</h2>
-            <div class="output" id="tokenOutput"></div>
-        </div>
-
         <!-- ダッシュボードデータ取得テスト -->
         <div class="section">
             <h2>📊 ダッシュボードデータ取得テスト (GET /api/dashboard/data)</h2>
-            <button onclick="testGetData()" id="getDataBtn" disabled>データ取得テスト</button>
+            <button onclick="testGetData()">データ取得テスト</button>
             <div id="dataOutput" class="output" style="display: none;"></div>
         </div>
     </div>
 
     <script>
-        let authToken = null;
         let serverUrl = 'http://localhost:5000';
 
         // サーバーURLの変更を監視
@@ -146,63 +120,8 @@
             serverUrl = this.value;
         });
 
-        // ログインテスト
-        async function testLogin() {
-            const userId = document.getElementById('userId').value;
-            const password = document.getElementById('password').value;
-            const output = document.getElementById('loginOutput');
-            
-            output.style.display = 'block';
-            output.innerHTML = '<span class="info">リクエスト送信中...</span>';
-
-            try {
-                const url = `${serverUrl}/api/auth/login`;
-                const body = JSON.stringify({
-                    id: userId,
-                    password: password
-                });
-
-                output.innerHTML += `\n\n<span class="info">URL:</span> ${url}`;
-                output.innerHTML += `\n<span class="info">Request Body:</span>\n${body}`;
-
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: body
-                });
-
-                output.innerHTML += `\n\n<span class="info">Status:</span> ${response.status} ${response.statusText}`;
-
-                const data = await response.json();
-                output.innerHTML += `\n\n<span class="info">Response:</span>\n${JSON.stringify(data, null, 2)}`;
-
-                if (response.ok && data.success) {
-                    authToken = data.token;
-                    output.innerHTML += `\n\n<span class="success">✓ ログイン成功！</span>`;
-                    
-                    // トークンを表示
-                    document.getElementById('tokenSection').style.display = 'block';
-                    document.getElementById('tokenOutput').textContent = authToken;
-                    
-                    // データ取得ボタンを有効化
-                    document.getElementById('getDataBtn').disabled = false;
-                } else {
-                    output.innerHTML += `\n\n<span class="error">✗ ログイン失敗: ${data.message}</span>`;
-                }
-            } catch (error) {
-                output.innerHTML += `\n\n<span class="error">✗ エラー: ${error.message}</span>`;
-            }
-        }
-
         // データ取得テスト
         async function testGetData() {
-            if (!authToken) {
-                alert('先にログインしてください。');
-                return;
-            }
-
             const output = document.getElementById('dataOutput');
             output.style.display = 'block';
             output.innerHTML = '<span class="info">リクエスト送信中...</span>';
@@ -211,12 +130,10 @@
                 const url = `${serverUrl}/api/dashboard/data`;
                 
                 output.innerHTML += `\n\n<span class="info">URL:</span> ${url}`;
-                output.innerHTML += `\n<span class="info">Authorization:</span> Bearer ${authToken.substring(0, 50)}...`;
 
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${authToken}`,
                         'Content-Type': 'application/json'
                     }
                 });
@@ -232,12 +149,6 @@
                     output.innerHTML += `\nタイトル: ${data.title}`;
                     output.innerHTML += `\nラベル数: ${data.labels.length}`;
                     output.innerHTML += `\n値の合計: ${data.values.reduce((a, b) => a + b, 0)}`;
-                } else if (response.status === 401) {
-                    const data = await response.json();
-                    output.innerHTML += `\n\n<span class="error">✗ 認証エラー: トークンが無効または期限切れです</span>`;
-                    authToken = null;
-                    document.getElementById('getDataBtn').disabled = true;
-                    document.getElementById('tokenSection').style.display = 'none';
                 } else {
                     const text = await response.text();
                     output.innerHTML += `\n\n<span class="error">✗ エラー: ${text}</span>`;

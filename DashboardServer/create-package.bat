@@ -1,54 +1,54 @@
 @echo off
-REM é…å¸ƒãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ä½œæˆã‚¹ã‚¯ãƒªãƒ—ãƒˆ
+REM ”z•zƒpƒbƒP[ƒWì¬ƒXƒNƒŠƒvƒg
 
 echo ========================================
-echo ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã‚·ã‚¹ãƒ†ãƒ  é…å¸ƒãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ä½œæˆ
+echo ƒ_ƒbƒVƒ…ƒ{[ƒhƒVƒXƒeƒ€ ”z•zƒpƒbƒP[ƒWì¬
 echo ========================================
 echo.
 
-REM ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸åï¼ˆæ—¥ä»˜ä»˜ãï¼‰
+REM ƒpƒbƒP[ƒW–¼i“ú•t•t‚«j
 set PACKAGE_NAME=DashboardSystem_%date:~0,4%%date:~5,2%%date:~8,2%
 
-echo ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸å: %PACKAGE_NAME%
+echo ƒpƒbƒP[ƒW–¼: %PACKAGE_NAME%
 echo.
 
-REM ä¸€æ™‚ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ
+REM ˆêŽžƒfƒBƒŒƒNƒgƒŠì¬
 if exist "package_temp" (
     rmdir /s /q "package_temp"
 )
 mkdir "package_temp\%PACKAGE_NAME%"
 
 echo ========================================
-echo 1. ã‚µãƒ¼ãƒãƒ¼ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ“ãƒ«ãƒ‰
+echo 1. ƒT[ƒo[ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìƒrƒ‹ƒh
 echo ========================================
 echo.
 
-REM ã‚µãƒ¼ãƒãƒ¼ã‚’ç™ºè¡Œ
+REM ƒT[ƒo[‚ð”­s
 call publish.bat
 
 if %errorlevel% neq 0 (
-    echo ã‚¨ãƒ©ãƒ¼: ã‚µãƒ¼ãƒãƒ¼ã®ãƒ“ãƒ«ãƒ‰ã«å¤±æ•—ã—ã¾ã—ãŸã€‚
+    echo ƒGƒ‰[: ƒT[ƒo[‚Ìƒrƒ‹ƒh‚ÉŽ¸”s‚µ‚Ü‚µ‚½B
     pause
     exit /b 1
 )
 
-REM ã‚µãƒ¼ãƒãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚³ãƒ”ãƒ¼
-echo ã‚µãƒ¼ãƒãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã«ã‚³ãƒ”ãƒ¼ã—ã¦ã„ã¾ã™...
+REM ƒT[ƒo[ƒtƒ@ƒCƒ‹‚ðƒRƒs[
+echo ƒT[ƒo[ƒtƒ@ƒCƒ‹‚ðƒpƒbƒP[ƒW‚ÉƒRƒs[‚µ‚Ä‚¢‚Ü‚·...
 xcopy /E /I /Y "publish" "package_temp\%PACKAGE_NAME%\Server"
 
 echo.
 echo ========================================
-echo 2. ãƒãƒƒãƒã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®ãƒ“ãƒ«ãƒ‰
+echo 2. ƒoƒbƒ`ƒCƒ“ƒ|[ƒgƒvƒƒOƒ‰ƒ€‚Ìƒrƒ‹ƒh
 echo ========================================
 echo.
 
 cd BatchImport
 
-REM ãƒãƒƒãƒãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’ç™ºè¡Œ
+REM ƒoƒbƒ`ƒvƒƒOƒ‰ƒ€‚ð”­s
 dotnet publish -c Release -r win-x64 --self-contained true -o "publish_batch"
 
 if %errorlevel% neq 0 (
-    echo ã‚¨ãƒ©ãƒ¼: ãƒãƒƒãƒãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®ãƒ“ãƒ«ãƒ‰ã«å¤±æ•—ã—ã¾ã—ãŸã€‚
+    echo ƒGƒ‰[: ƒoƒbƒ`ƒvƒƒOƒ‰ƒ€‚Ìƒrƒ‹ƒh‚ÉŽ¸”s‚µ‚Ü‚µ‚½B
     cd ..
     pause
     exit /b 1
@@ -56,14 +56,14 @@ if %errorlevel% neq 0 (
 
 cd ..
 
-REM ãƒãƒƒãƒãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚³ãƒ”ãƒ¼
-echo ãƒãƒƒãƒãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã«ã‚³ãƒ”ãƒ¼ã—ã¦ã„ã¾ã™...
+REM ƒoƒbƒ`ƒtƒ@ƒCƒ‹‚ðƒRƒs[
+echo ƒoƒbƒ`ƒtƒ@ƒCƒ‹‚ðƒpƒbƒP[ƒW‚ÉƒRƒs[‚µ‚Ä‚¢‚Ü‚·...
 xcopy /E /I /Y "BatchImport\publish_batch" "package_temp\%PACKAGE_NAME%\BatchImport"
 copy "BatchImport\README.md" "package_temp\%PACKAGE_NAME%\BatchImport\"
 
 echo.
 echo ========================================
-echo 3. ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã®ã‚³ãƒ”ãƒ¼
+echo 3. ƒhƒLƒ…ƒƒ“ƒg‚ÌƒRƒs[
 echo ========================================
 echo.
 
@@ -72,29 +72,29 @@ copy "SETUP_GUIDE.md" "package_temp\%PACKAGE_NAME%\"
 
 echo.
 echo ========================================
-echo 4. ZIPãƒ•ã‚¡ã‚¤ãƒ«ã®ä½œæˆ
+echo 4. ZIPƒtƒ@ƒCƒ‹‚Ìì¬
 echo ========================================
 echo.
 
-REM PowerShellã§ZIPä½œæˆ
+REM PowerShell‚ÅZIPì¬
 powershell -Command "Compress-Archive -Path 'package_temp\%PACKAGE_NAME%' -DestinationPath '%PACKAGE_NAME%.zip' -Force"
 
 if %errorlevel% equ 0 (
     echo.
     echo ========================================
-    echo ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ä½œæˆå®Œäº†ï¼
+    echo ƒpƒbƒP[ƒWì¬Š®—¹I
     echo ========================================
     echo.
-    echo ä½œæˆã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«: %PACKAGE_NAME%.zip
+    echo ì¬‚³‚ê‚½ƒtƒ@ƒCƒ‹: %PACKAGE_NAME%.zip
     echo.
-    echo ã“ã®ZIPãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ•ãƒ©ã‚¤ãƒ³ç’°å¢ƒã«è»¢é€ã—ã¦ãã ã•ã„ã€‚
-    echo ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—æ–¹æ³•ã¯ SETUP_GUIDE.md ã‚’å‚ç…§ã—ã¦ãã ã•ã„ã€‚
+    echo ‚±‚ÌZIPƒtƒ@ƒCƒ‹‚ðƒIƒtƒ‰ƒCƒ“ŠÂ‹«‚É“]‘—‚µ‚Ä‚­‚¾‚³‚¢B
+    echo ƒZƒbƒgƒAƒbƒv•û–@‚Í SETUP_GUIDE.md ‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
     echo.
 ) else (
-    echo ã‚¨ãƒ©ãƒ¼: ZIPãƒ•ã‚¡ã‚¤ãƒ«ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸã€‚
+    echo ƒGƒ‰[: ZIPƒtƒ@ƒCƒ‹‚Ìì¬‚ÉŽ¸”s‚µ‚Ü‚µ‚½B
 )
 
-REM ä¸€æ™‚ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å‰Šé™¤
+REM ˆêŽžƒfƒBƒŒƒNƒgƒŠ‚ðíœ
 rmdir /s /q "package_temp"
 rmdir /s /q "BatchImport\publish_batch"
 

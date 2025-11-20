@@ -1,44 +1,44 @@
 @echo off
-REM Windowsã‚µãƒ¼ãƒ“ã‚¹ã‚’ã‚¢ãƒ³ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
-REM ç®¡ç†è€…æ¨©é™ã§å®Ÿè¡Œã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™
+REM WindowsƒT[ƒrƒX‚ðƒAƒ“ƒCƒ“ƒXƒg[ƒ‹‚·‚éƒXƒNƒŠƒvƒg
+REM ŠÇ—ŽÒŒ ŒÀ‚ÅŽÀs‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 
 echo ========================================
-echo ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã‚µãƒ¼ãƒãƒ¼ ã‚µãƒ¼ãƒ“ã‚¹ã‚¢ãƒ³ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+echo ƒ_ƒbƒVƒ…ƒ{[ƒhƒT[ƒo[ ƒT[ƒrƒXƒAƒ“ƒCƒ“ƒXƒg[ƒ‹
 echo ========================================
 echo.
 
-REM ç®¡ç†è€…æ¨©é™ãƒã‚§ãƒƒã‚¯
+REM ŠÇ—ŽÒŒ ŒÀƒ`ƒFƒbƒN
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ã‚¨ãƒ©ãƒ¼: ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã¯ç®¡ç†è€…æ¨©é™ã§å®Ÿè¡Œã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
-    echo å³ã‚¯ãƒªãƒƒã‚¯ â†’ ã€Œç®¡ç†è€…ã¨ã—ã¦å®Ÿè¡Œã€ã—ã¦ãã ã•ã„ã€‚
+    echo ƒGƒ‰[: ‚±‚ÌƒXƒNƒŠƒvƒg‚ÍŠÇ—ŽÒŒ ŒÀ‚ÅŽÀs‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+    echo ‰EƒNƒŠƒbƒN ¨ uŠÇ—ŽÒ‚Æ‚µ‚ÄŽÀsv‚µ‚Ä‚­‚¾‚³‚¢B
     pause
     exit /b 1
 )
 
-REM ã‚µãƒ¼ãƒ“ã‚¹ã®å­˜åœ¨ç¢ºèª
+REM ƒT[ƒrƒX‚Ì‘¶ÝŠm”F
 sc query DashboardService >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ã‚µãƒ¼ãƒ“ã‚¹ 'DashboardService' ã¯å­˜åœ¨ã—ã¾ã›ã‚“ã€‚
+    echo ƒT[ƒrƒX 'DashboardService' ‚Í‘¶Ý‚µ‚Ü‚¹‚ñB
     pause
     exit /b 0
 )
 
-echo ã‚µãƒ¼ãƒ“ã‚¹ã‚’åœæ­¢ã—ã¦ã„ã¾ã™...
+echo ƒT[ƒrƒX‚ð’âŽ~‚µ‚Ä‚¢‚Ü‚·...
 sc stop DashboardService
 timeout /t 3 /nobreak >nul
 
-echo ã‚µãƒ¼ãƒ“ã‚¹ã‚’å‰Šé™¤ã—ã¦ã„ã¾ã™...
+echo ƒT[ƒrƒX‚ðíœ‚µ‚Ä‚¢‚Ü‚·...
 sc delete DashboardService
 
 if %errorlevel% equ 0 (
     echo.
     echo ========================================
-    echo ã‚µãƒ¼ãƒ“ã‚¹ã®ã‚¢ãƒ³ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãŒå®Œäº†ã—ã¾ã—ãŸ
+    echo ƒT[ƒrƒX‚ÌƒAƒ“ƒCƒ“ƒXƒg[ƒ‹‚ªŠ®—¹‚µ‚Ü‚µ‚½
     echo ========================================
     echo.
 ) else (
-    echo ã‚¨ãƒ©ãƒ¼: ã‚µãƒ¼ãƒ“ã‚¹ã®å‰Šé™¤ã«å¤±æ•—ã—ã¾ã—ãŸã€‚
+    echo ƒGƒ‰[: ƒT[ƒrƒX‚Ìíœ‚ÉŽ¸”s‚µ‚Ü‚µ‚½B
 )
 
 pause

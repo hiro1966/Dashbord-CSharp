@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DashboardServer.Models;
 using DashboardServer.Services;
@@ -7,7 +6,6 @@ namespace DashboardServer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class DashboardController : ControllerBase
 {
     private readonly DashboardService _dashboardService;

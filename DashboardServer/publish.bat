@@ -1,44 +1,44 @@
 @echo off
-REM ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã‚µãƒ¼ãƒãƒ¼ç™ºè¡Œã‚¹ã‚¯ãƒªãƒ—ãƒˆ
-REM ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã¯.NET 8.0ãŒã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚ŒãŸWindowsç’°å¢ƒã§å®Ÿè¡Œã—ã¦ãã ã•ã„
+REM ƒ_ƒbƒVƒ…ƒ{[ƒhƒT[ƒo[”­sƒXƒNƒŠƒvƒg
+REM ‚±‚ÌƒXƒNƒŠƒvƒg‚Í.NET 8.0‚ªƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚½WindowsŠÂ‹«‚ÅŽÀs‚µ‚Ä‚­‚¾‚³‚¢
 
 echo ========================================
-echo ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã‚µãƒ¼ãƒãƒ¼ ç™ºè¡Œã‚¹ã‚¯ãƒªãƒ—ãƒˆ
+echo ƒ_ƒbƒVƒ…ƒ{[ƒhƒT[ƒo[ ”­sƒXƒNƒŠƒvƒg
 echo ========================================
 echo.
 
-REM ç™ºè¡Œå…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+REM ”­sæƒfƒBƒŒƒNƒgƒŠ
 set PUBLISH_DIR=.\publish
 
-REM æ—¢å­˜ã®ç™ºè¡Œãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å‰Šé™¤
+REM Šù‘¶‚Ì”­sƒfƒBƒŒƒNƒgƒŠ‚ðíœ
 if exist "%PUBLISH_DIR%" (
-    echo æ—¢å­˜ã®ç™ºè¡Œãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å‰Šé™¤ã—ã¦ã„ã¾ã™...
+    echo Šù‘¶‚Ì”­sƒfƒBƒŒƒNƒgƒŠ‚ðíœ‚µ‚Ä‚¢‚Ü‚·...
     rmdir /s /q "%PUBLISH_DIR%"
 )
 
 echo.
-echo ç™ºè¡Œã‚’é–‹å§‹ã—ã¾ã™...
+echo ”­s‚ðŠJŽn‚µ‚Ü‚·...
 echo.
 
-REM è‡ªå·±å®Œçµåž‹ã§ç™ºè¡Œï¼ˆ.NET Runtimeã‚’å«ã‚€ï¼‰
+REM Ž©ŒÈŠ®Œ‹Œ^‚Å”­si.NET Runtime‚ðŠÜ‚Þj
 dotnet publish -c Release -r win-x64 --self-contained true -o "%PUBLISH_DIR%"
 
 if %errorlevel% equ 0 (
     echo.
     echo ========================================
-    echo ç™ºè¡ŒãŒå®Œäº†ã—ã¾ã—ãŸï¼
+    echo ”­s‚ªŠ®—¹‚µ‚Ü‚µ‚½I
     echo ========================================
     echo.
-    echo ç™ºè¡Œå…ˆ: %PUBLISH_DIR%
+    echo ”­sæ: %PUBLISH_DIR%
     echo.
-    echo æ¬¡ã®æ‰‹é †:
-    echo 1. %PUBLISH_DIR% ãƒ•ã‚©ãƒ«ãƒ€ã‚’é…ç½®å…ˆã‚µãƒ¼ãƒãƒ¼ã«ã‚³ãƒ”ãƒ¼
-    echo 2. appsettings.json ã‚’ç·¨é›†ï¼ˆOracleæŽ¥ç¶šæƒ…å ±ãªã©ï¼‰
-    echo 3. DashboardServer.exe ã‚’å®Ÿè¡Œ
+    echo ŽŸ‚ÌŽè‡:
+    echo 1. %PUBLISH_DIR% ƒtƒHƒ‹ƒ_‚ð”z’uæƒT[ƒo[‚ÉƒRƒs[
+    echo 2. appsettings.json ‚ð•ÒWiOracleÚ‘±î•ñ‚È‚Çj
+    echo 3. DashboardServer.exe ‚ðŽÀs
     echo.
 ) else (
     echo.
-    echo ã‚¨ãƒ©ãƒ¼: ç™ºè¡Œã«å¤±æ•—ã—ã¾ã—ãŸã€‚
+    echo ƒGƒ‰[: ”­s‚ÉŽ¸”s‚µ‚Ü‚µ‚½B
     echo.
 )
 

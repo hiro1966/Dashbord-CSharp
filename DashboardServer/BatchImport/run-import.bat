@@ -1,18 +1,18 @@
 @echo off
-REM ãƒ‡ãƒ¼ã‚¿ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒãƒƒãƒå®Ÿè¡Œã‚¹ã‚¯ãƒªãƒ—ãƒˆ
+REM ƒf[ƒ^ƒCƒ“ƒ|[ƒgƒoƒbƒ`ŽÀsƒXƒNƒŠƒvƒg
 
 echo ========================================
-echo ãƒ‡ãƒ¼ã‚¿ã‚¤ãƒ³ãƒãƒ¼ãƒˆé–‹å§‹
+echo ƒf[ƒ^ƒCƒ“ƒ|[ƒgŠJŽn
 echo ========================================
-echo å®Ÿè¡Œæ—¥æ™‚: %date% %time%
+echo ŽÀs“úŽž: %date% %time%
 echo.
 
-REM ãƒãƒƒãƒãƒ—ãƒ­ã‚°ãƒ©ãƒ å®Ÿè¡Œ
+REM ƒoƒbƒ`ƒvƒƒOƒ‰ƒ€ŽÀs
 if exist "DataImport.exe" (
-    REM ç™ºè¡Œæ¸ˆã¿ã®å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½¿ç”¨
+    REM ”­sÏ‚Ý‚ÌŽÀsƒtƒ@ƒCƒ‹‚ðŽg—p
     DataImport.exe
 ) else (
-    REM .NET SDKã§ãƒ“ãƒ«ãƒ‰ï¼†å®Ÿè¡Œ
+    REM .NET SDK‚Åƒrƒ‹ƒh•ŽÀs
     dotnet run
 )
 
@@ -20,13 +20,13 @@ set EXIT_CODE=%errorlevel%
 
 echo.
 if %EXIT_CODE% equ 0 (
-    echo ãƒ‡ãƒ¼ã‚¿ã‚¤ãƒ³ãƒãƒ¼ãƒˆãŒæ­£å¸¸ã«çµ‚äº†ã—ã¾ã—ãŸã€‚
+    echo ƒf[ƒ^ƒCƒ“ƒ|[ƒg‚ª³í‚ÉI—¹‚µ‚Ü‚µ‚½B
 ) else (
-    echo ã‚¨ãƒ©ãƒ¼: ãƒ‡ãƒ¼ã‚¿ã‚¤ãƒ³ãƒãƒ¼ãƒˆãŒå¤±æ•—ã—ã¾ã—ãŸã€‚
-    echo çµ‚äº†ã‚³ãƒ¼ãƒ‰: %EXIT_CODE%
+    echo ƒGƒ‰[: ƒf[ƒ^ƒCƒ“ƒ|[ƒg‚ªŽ¸”s‚µ‚Ü‚µ‚½B
+    echo I—¹ƒR[ƒh: %EXIT_CODE%
 )
 
-REM æ‰‹å‹•å®Ÿè¡Œæ™‚ã¯ä¸€æ™‚åœæ­¢
+REM Žè“®ŽÀsŽž‚ÍˆêŽž’âŽ~
 if "%1"=="" pause
 
 exit /b %EXIT_CODE%
