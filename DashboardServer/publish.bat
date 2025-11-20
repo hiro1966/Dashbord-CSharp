@@ -1,6 +1,6 @@
 @echo off
 REM ダッシュボードサーバー発行スクリプト
-REM このスクリプトは.NET 8.0がインストールされたWindows環境で実行してください
+REM このスクリプトを.NET 8.0がインストールされたWindowsで実行してください
 
 echo ========================================
 echo ダッシュボードサーバー 発行スクリプト
@@ -16,11 +16,18 @@ if exist "%PUBLISH_DIR%" (
     rmdir /s /q "%PUBLISH_DIR%"
 )
 
+REM ビルドキャッシュをクリーンアップ（重複エラー防止）
+echo.
+echo ビルドキャッシュをクリーンアップしています...
+if exist obj rmdir /s /q obj
+if exist bin rmdir /s /q bin
+dotnet clean --configuration Release --verbosity quiet
+
 echo.
 echo 発行を開始します...
 echo.
 
-REM 自己完結型で発行（.NET Runtimeを含む）
+REM 完全自己完結型で発行（.NET Runtimeを含む）
 dotnet publish -c Release -r win-x64 --self-contained true -o "%PUBLISH_DIR%"
 
 if %errorlevel% equ 0 (
