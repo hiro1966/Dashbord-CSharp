@@ -1,4 +1,5 @@
 using DashboardServer.Services;
+using DashboardServer.GraphQL.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,11 @@ builder.Services.AddCors(options =>
 
 // サービス登録
 builder.Services.AddScoped<DashboardService>();
+
+// GraphQL設定
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<DashboardQuery>();
 
 var app = builder.Build();
 
@@ -44,6 +50,9 @@ app.UseDefaultFiles();
 app.UseCors("AllowAll");
 
 app.MapControllers();
+
+// GraphQLエンドポイント
+app.MapGraphQL("/graphql");
 
 // デフォルトルート（wwwroot/index.htmlにリダイレクト）
 app.MapFallbackToFile("index.html");
