@@ -16,13 +16,40 @@ if exist "%PUBLISH_DIR%" (
     rmdir /s /q "%PUBLISH_DIR%"
 )
 
-REM ビルドキャッシュをクリーンアップ（重複エラー防止）
 echo.
-echo ビルドキャッシュをクリーンアップしています...
-if exist obj rmdir /s /q obj
-if exist bin rmdir /s /q bin
+echo ビルドキャッシュを完全にクリーンアップしています...
+echo.
+
+REM まずdotnet cleanを実行
 dotnet clean --configuration Release --verbosity quiet
 
+REM obj/binフォルダを強制削除（少し待機してから実行）
+timeout /t 1 /nobreak >nul
+if exist obj (
+    echo obj フォルダを削除中...
+    rmdir /s /q obj
+)
+if exist bin (
+    echo bin フォルダを削除中...
+    rmdir /s /q bin
+)
+
+REM フォルダが完全に削除されるまで待機
+timeout /t 2 /nobreak >nul
+
+REM 削除確認
+if exist obj (
+    echo 警告: obj フォルダの削除に失敗しました。手動で削除してください。
+    pause
+    exit /b 1
+)
+if exist bin (
+    echo 警告: bin フォルダの削除に失敗しました。手動で削除してください。
+    pause
+    exit /b 1
+)
+
+echo クリーンアップ完了
 echo.
 echo 発行を開始します...
 echo.
@@ -46,6 +73,7 @@ if %errorlevel% equ 0 (
 ) else (
     echo.
     echo エラー: 発行に失敗しました。
+    echo もう一度実行してみてください。
     echo.
 )
 
