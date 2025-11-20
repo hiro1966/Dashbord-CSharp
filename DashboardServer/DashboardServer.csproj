@@ -12,4 +12,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <!-- スクリプト用のProgram.csをビルドから除外 -->
+  <ItemGroup>
+    <Compile Remove="BatchImport\**\*.cs" />
+    <Compile Remove="Scripts\**\*.cs" />
+  </ItemGroup>
+
 </Project>
