@@ -103,16 +103,21 @@ public partial class DashboardService
         string endDate)
     {
         var groupByClause = GetGroupByClause(period);
+        
+        // 表示対象の診療科のみを取得（SEQ順）
         var query = $@"
             SELECT 
                 {groupByClause} as Period,
                 s.診療科名,
+                s.SEQ,
+                s.Color,
                 SUM(o.患者数) as Total
             FROM 外来患者 o
             INNER JOIN 診療科 s ON o.診療科ID = s.診療科ID
             WHERE o.年月日 BETWEEN @StartDate AND @EndDate
-            GROUP BY {groupByClause}, s.診療科名
-            ORDER BY {groupByClause}, s.診療科名";
+              AND s.isDisplay = 1
+            GROUP BY {groupByClause}, s.診療科名, s.SEQ, s.Color
+            ORDER BY {groupByClause}, s.SEQ, s.診療科名";
 
         using var command = new SqliteCommand(query, connection);
         command.Parameters.AddWithValue("@StartDate", startDate);
@@ -120,7 +125,7 @@ public partial class DashboardService
 
         var tempData = new Dictionary<string, Dictionary<string, int>>();
         var labels = new List<string>();
-        var departments = new List<string>();
+        var departments = new List<(string name, int seq, string? color)>();
 
         // データを一度に取得して整形
         using (var reader = await command.ExecuteReaderAsync())
@@ -129,16 +134,18 @@ public partial class DashboardService
             {
                 var periodLabel = reader.GetString(0);
                 var deptName = reader.GetString(1);
-                var value = reader.GetInt32(2);
+                var seq = reader.GetInt32(2);
+                var color = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var value = reader.GetInt32(4);
 
                 if (!labels.Contains(periodLabel))
                 {
                     labels.Add(periodLabel);
                 }
 
-                if (!departments.Contains(deptName))
+                if (!departments.Any(d => d.name == deptName))
                 {
-                    departments.Add(deptName);
+                    departments.Add((deptName, seq, color));
                 }
 
                 if (!tempData.ContainsKey(periodLabel))
@@ -149,35 +156,33 @@ public partial class DashboardService
             }
         }
 
-        // Datasetを構築
-        var colors = new Dictionary<string, (string border, string bg)>
-        {
-            ["内科"] = ("rgb(255, 99, 132)", "rgba(255, 99, 132, 0.5)"),
-            ["小児科"] = ("rgb(54, 162, 235)", "rgba(54, 162, 235, 0.5)"),
-            ["整形外科"] = ("rgb(255, 206, 86)", "rgba(255, 206, 86, 0.5)")
-        };
+        // SEQ順にソート
+        departments = departments.OrderBy(d => d.seq).ToList();
 
+        // Datasetを構築（マスタから取得した色を使用）
         var datasets = new List<DatasetInfo>();
         foreach (var dept in departments)
         {
             var values = new List<int>();
             foreach (var label in labels)
             {
-                values.Add(tempData.ContainsKey(label) && tempData[label].ContainsKey(dept) 
-                    ? tempData[label][dept] 
+                values.Add(tempData.ContainsKey(label) && tempData[label].ContainsKey(dept.name) 
+                    ? tempData[label][dept.name] 
                     : 0);
             }
 
-            var color = colors.ContainsKey(dept) 
-                ? colors[dept] 
-                : ("rgb(201, 203, 207)", "rgba(201, 203, 207, 0.5)");
+            // Colorフィールドから色を取得、なければデフォルト
+            var hexColor = dept.color ?? "#8b5cf6";
+            var rgbColor = HexToRgb(hexColor);
+            var borderColor = $"rgb({rgbColor.r}, {rgbColor.g}, {rgbColor.b})";
+            var bgColor = $"rgba({rgbColor.r}, {rgbColor.g}, {rgbColor.b}, 0.5)";
 
             datasets.Add(new DatasetInfo
             {
-                Label = dept,
+                Label = dept.name,
                 Data = values,
-                BorderColor = color.Item1,
-                BackgroundColor = color.Item2,
+                BorderColor = borderColor,
+                BackgroundColor = bgColor,
                 Fill = true
             });
         }
@@ -190,6 +195,23 @@ public partial class DashboardService
         };
     }
 
+    /// <summary>
+    /// 16進数カラーコードをRGBに変換
+    /// </summary>
+    private (int r, int g, int b) HexToRgb(string hex)
+    {
+        hex = hex.TrimStart('#');
+        if (hex.Length == 6)
+        {
+            return (
+                Convert.ToInt32(hex.Substring(0, 2), 16),
+                Convert.ToInt32(hex.Substring(2, 2), 16),
+                Convert.ToInt32(hex.Substring(4, 2), 16)
+            );
+        }
+        return (139, 92, 246); // デフォルト: purple-500
+    }
+
     private async Task<OutpatientChartData> GetOutpatientSingleDepartmentAsync(
         SqliteConnection connection, 
         string department, 
@@ -198,6 +220,14 @@ public partial class DashboardService
         string endDate)
     {
         var groupByClause = GetGroupByClause(period);
+        
+        // 診療科の色をマスタから取得
+        var colorQuery = "SELECT Color FROM 診療科 WHERE 診療科名 = @Department";
+        using var colorCmd = new SqliteCommand(colorQuery, connection);
+        colorCmd.Parameters.AddWithValue("@Department", department);
+        var colorResult = await colorCmd.ExecuteScalarAsync();
+        var hexColor = colorResult?.ToString() ?? "#8b5cf6";
+        
         var query = $@"
             SELECT 
                 {groupByClause} as Period,
@@ -224,13 +254,10 @@ public partial class DashboardService
             values.Add(reader.GetInt32(1));
         }
 
-        var color = department switch
-        {
-            "内科" => ("rgb(255, 99, 132)", "rgba(255, 99, 132, 0.2)"),
-            "小児科" => ("rgb(54, 162, 235)", "rgba(54, 162, 235, 0.2)"),
-            "整形外科" => ("rgb(255, 206, 86)", "rgba(255, 206, 86, 0.2)"),
-            _ => ("rgb(75, 192, 192)", "rgba(75, 192, 192, 0.2)")
-        };
+        // マスタから取得した色を使用
+        var rgb = HexToRgb(hexColor);
+        var borderColor = $"rgb({rgb.r}, {rgb.g}, {rgb.b})";
+        var bgColor = $"rgba({rgb.r}, {rgb.g}, {rgb.b}, 0.2)";
 
         return new OutpatientChartData
         {
@@ -242,8 +269,8 @@ public partial class DashboardService
                 {
                     Label = department,
                     Data = values,
-                    BorderColor = color.Item1,
-                    BackgroundColor = color.Item2,
+                    BorderColor = borderColor,
+                    BackgroundColor = bgColor,
                     Fill = false
                 }
             }

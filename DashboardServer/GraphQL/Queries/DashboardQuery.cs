@@ -6,6 +6,22 @@ namespace DashboardServer.GraphQL.Queries;
 public class DashboardQuery
 {
     /// <summary>
+    /// 診療科マスタ取得
+    /// </summary>
+    public async Task<List<Department>> GetDepartments([Service] DashboardService service)
+    {
+        return await service.GetDepartmentsAsync();
+    }
+
+    /// <summary>
+    /// 病棟マスタ取得
+    /// </summary>
+    public async Task<List<Ward>> GetWards([Service] DashboardService service)
+    {
+        return await service.GetWardsAsync();
+    }
+
+    /// <summary>
     /// 入院患者データ取得
     /// </summary>
     public async Task<DashboardData> GetInpatientData([Service] DashboardService service)
