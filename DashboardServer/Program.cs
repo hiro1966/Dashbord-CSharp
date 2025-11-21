@@ -3,6 +3,12 @@ using DashboardServer.GraphQL.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// すべてのネットワークインターフェースで待ち受ける（スマホからのアクセスを許可）
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5260);
+});
+
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
